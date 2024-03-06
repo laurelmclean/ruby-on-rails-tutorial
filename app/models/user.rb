@@ -45,6 +45,16 @@ class User < ApplicationRecord
     update_attribute(:remember_digest, nil)
   end
 
+  # activates an account
+  def activate
+    update_columns(activated: true, activated_at: Time.zone.now)
+  end 
+
+  #send activation email
+  def send_activation_email
+    UserMailer.account_activation(self).deliver_now
+  end
+
   private
 
   # converts email to all lowercase
