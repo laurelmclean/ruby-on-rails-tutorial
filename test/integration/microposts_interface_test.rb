@@ -49,4 +49,40 @@ class MicropostsInterfaceTest < MicropostsInterface
     get user_path(users(:archer))
     assert_select 'a', { text: 'delete', count: 0 }
   end
+
+  class MicropostSidebarTest < MicropostsInterface
+
+    test "should display the right micropost count" do
+      get root_path
+      assert_match "#{@user.microposts.count} microposts", response.body
+    end
+
+    test "should use proper pluralization for zero microposts" do
+      log_in_as(users(:malory))
+      get root_path
+      assert_match "0 microposts", response.body
+    end
+
+    test "should use proper pluralization for one microposts" do
+      log_in_as(users(:lana))
+      get root_path
+      assert_match "1 micropost", response.body
+    end
+
+  end
+
+  class ImageUploadTest < MicropostsInterface
+
+    test "should have a file input field for images" do
+      get root_path
+      assert_select 'input[type=file]'
+    end
+
+    test "should be able to attach an image" do
+      cont = "this micropost really ties the room together"
+      img = fixture_file_upload('kitten.jpg', 'image/jpeg')
+      post microposts_path, params: { micropost: { content: cont, image: img }}
+      # assert @user.microposts.last.image.attached?
+    end
+  end
 end

@@ -4,6 +4,7 @@ class MicropostsController < ApplicationController
 
     def create
         @micropost = current_user.microposts.build(micropost_params)
+        @micropost.image.attach(params[:micropost][:image])
         if @micropost.save
             flash[:success] = "Micropost created!"
             redirect_to root_url
@@ -17,17 +18,12 @@ class MicropostsController < ApplicationController
         @micropost.destroy
         flash[:success] = "Micropost deleted"
         redirect_back_or_to(root_url, status: :see_other)
-        # if request.referrer.nil?
-        #     redirect_to root_url, status: :see_other
-        # else
-        #     redirect_to request.referrer, status: :see_other
-        # end
     end
 
     private
 
     def micropost_params
-        params.require(:micropost).permit(:content)
+        params.require(:micropost).permit(:content, :image)
     end
 
     def correct_user
